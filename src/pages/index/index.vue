@@ -1,15 +1,10 @@
 <template>
-  <view class="content">
-    <image class="logo" src="/static/logo.png" />
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
-    </view>
-  </view>
+  <el-input v-model="input" placeholder="Please input" />
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-const title = ref('Hello')
+<script lang="ts" setup>
+import { ref } from 'vue';
+const input = ref('')
 </script>
 
 <style>
