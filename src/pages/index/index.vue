@@ -1,41 +1,34 @@
 <template>
-  <view class="content">
-    <image class="logo" src="/static/logo.png" />
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
-    </view>
-  </view>
+  <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto">
+    <li v-for="i in count" :key="i" class="infinite-list-item">{{ i }}</li>
+  </ul>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-const title = ref('Hello')
+<script lang="ts" setup>
+import { ref } from 'vue';
+const count = ref(0)
+const load = () => {
+  count.value += 2
+}
 </script>
 
 <style>
-.content {
+.infinite-list {
+  height: 600px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.infinite-list .infinite-list-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100px;
+  background: var(--el-color-primary-light-9);
+  margin: 10px;
+  color: var(--el-color-primary);
 }
-
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin-top: 200rpx;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 50rpx;
-}
-
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+.infinite-list .infinite-list-item + .list-item {
+  margin-top: 10px;
 }
 </style>
