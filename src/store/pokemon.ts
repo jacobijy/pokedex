@@ -5,7 +5,7 @@ import { ref, type Ref } from 'vue';
 
 export const usePokemonStore = defineStore('pokemon', () => {
   const pokemonList: Ref<IPokemonModal[]> = ref([]);
-  const favorites = ref(JSON.parse(localStorage.getItem('pokemonFavorites') + '') || []);
+  const favorites:Ref<number[]> = ref(JSON.parse(localStorage.getItem('pokemonFavorites') + '') || []);
   
   // 获取宝可梦数据
   const fetchPokemon = async () => {
