@@ -1,3 +1,4 @@
 {
-    "miniprogram.miniprogramPath": "./dist/dev/mp-weixin"
+    "miniprogram.miniprogramPath": "./dist/dev/mp-weixin",
+    "i18n-ally.localesPaths": []
 }

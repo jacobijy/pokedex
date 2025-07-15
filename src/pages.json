@@ -8,6 +8,12 @@
 					"titleNView": false
 				}
 			}
+		},
+		{
+			"path": "pages/favorites/index",
+			"style": {
+				"navigationBarTitleText": "收藏"
+			}
 		}
 	],
 	"globalStyle": {
@@ -15,5 +21,25 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index", // 必须与 pages 中的路径完全一致
+				"iconPath": "static/home.png",
+				"selectedIconPath": "static/home-active.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/favorites/index", // 必须与 pages 中的路径完全一致
+				"iconPath": "static/user.png",
+				"selectedIconPath": "static/user-active.png",
+				"text": "我的"
+			}
+		]
 	}
 }
