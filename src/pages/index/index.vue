@@ -1,210 +1,137 @@
 <template>
-  <view class="favorites-container">
-    <!-- 顶部标题 -->
-    <view class="favorites-header">
-      <image src="/static/star.png" class="header-icon" />
-      <text class="header-title">我的收藏</text>
-    </view>
+  <view class="container">
+    <!-- 导航栏 -->
+    <NavBar />
     
-    <!-- 收藏列表 -->
-    <scroll-view 
-      scroll-y 
-      class="pokemon-grid"
-      v-if="favoritesList.length > 0"
-    >
+    <!-- 筛选和排序 -->
+    <!-- <FilterBar :types="types" @filter="onFilter" @sort="onSort" /> -->
+    
+    <!-- 宝可梦列表 -->
+    <view class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 py-6">
       <PokemonCard 
-        v-for="p in favoritesList" 
-        :key="p.id" 
-        :pokemon="p" 
-        @select="showDetail"
+        v-for="pokemon in filteredPokemons" 
+        :key="pokemon.id" 
+        :pokemon="pokemon" 
+        @click="navigateToDetail(pokemon.id)"
       />
-    </scroll-view>
-    
-    <!-- 空状态 -->
-    <view v-else class="empty-state">
-      <image src="/static/pokeball.png" class="empty-icon" />
-      <text class="empty-text">暂无收藏的宝可梦</text>
-      <text class="empty-hint">去宝可梦列表收藏喜欢的宝可梦吧</text>
     </view>
     
-    <!-- 详情页弹窗 -->
-    <PokemonDetail 
-      v-if="selectedPokemon" 
-      :pokemon="selectedPokemon" 
-      @close="selectedPokemon = null"
+    <!-- 分页控件 -->
+    <Pagination 
+      :currentPage="currentPage" 
+      :totalPages="totalPages" 
+      @pageChange="changePage"
     />
-    
-    <!-- 底部导航栏 -->
-    <view class="tab-bar">
-      <view 
-        class="tab-item"
-        :class="{ active: activeTab === 'index' }"
-        @click="switchTab('index')"
-      >
-        <image 
-          src="/static/tab-icons/pokemon.png" 
-          class="tab-icon"
-          :class="{ active: activeTab === 'index' }"
-        />
-        <text>宝可梦</text>
-      </view>
-      <view 
-        class="tab-item"
-        :class="{ active: activeTab === 'favorites' }"
-        @click="switchTab('favorites')"
-      >
-        <image 
-          src="/static/tab-icons/star.png" 
-          class="tab-icon"
-          :class="{ active: activeTab === 'favorites' }"
-        />
-        <text>收藏</text>
-      </view>
-    </view>
   </view>
 </template>
 
-<script setup>
-import PokemonCard from '@/components/PokemonCard.vue';
-import PokemonDetail from '@/components/PokemonDetail.vue';
-import { usePokemonStore } from '@/store/pokemon';
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+<script>
+import FilterBar from '@/components/FilterBar.vue'
+import NavBar from '@/components/NavBar.vue'
+import Pagination from '@/components/Pagination.vue'
+import PokemonCard from '@/components/pokemon/PokemonCard.vue'
 
-const pokemonStore = usePokemonStore();
-const { pokemonList, favorites } = storeToRefs(pokemonStore);
+export default {
+  components: {
+    NavBar,
+    FilterBar,
+    PokemonCard,
+    Pagination
+  },
+  data() {
+    return {
+      pokemons: [], // 从API获取的全部宝可梦数据
+      filteredPokemons: [], // 过滤后的宝可梦数据
+      currentPage: 1,
+      pageSize: 20,
+      types: ['一般', '火', '水', '电', '草', '冰', '格斗', '毒', '地面', '飞行', '超能力', '虫', '岩石', '幽灵', '龙', '恶', '钢', '妖精'],
+      selectedType: '',
+      sortBy: 'id'
+    }
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.pokemons.length / this.pageSize)
+    }
+  },
+  onLoad() {
+    this.fetchPokemons()
+  },
+  methods: {
+    async fetchPokemons() {
+      // 模拟API请求获取宝可梦数据
+      try {
+        const res = await uni.request({
+          url: 'https://pokeapi.co/api/v2/pokemon?limit=151',
+          method: 'GET'
+        })
+        
+        // 为简化示例，这里使用模拟数据
+        this.pokemons = [
+          { id: 1, name: '妙蛙种子', types: ['草', '毒'], image: 'https://picsum.photos/seed/bulbasaur/200/200', hp: 45 },
+          { id: 4, name: '小火龙', types: ['火'], image: 'https://picsum.photos/seed/charmander/200/200', hp: 39 },
 
-const activeTab = ref('favorites');
-const selectedPokemon = ref(null);
-
-// 获取收藏的宝可梦列表
-const favoritesList = computed(() => {
-  return pokemonList.value.filter(p => favorites.value.includes(p.id));
-});
-
-// 显示详情
-const showDetail = (pokemon) => {
-  selectedPokemon.value = pokemon;
-};
-
-// 切换标签页
-const switchTab = (tab) => {
-  if (tab === 'index') {
-    uni.switchTab({
-      url: '/pages/index/index'
-    });
-  } else {
-    activeTab.value = tab;
+        ]
+        
+        this.filteredPokemons = [...this.pokemons]
+        this.applyFiltersAndSort()
+      } catch (error) {
+        console.error('获取宝可梦数据失败:', error)
+        uni.showToast({
+          title: '获取数据失败',
+          icon: 'none'
+        })
+      }
+    },
+    applyFiltersAndSort() {
+      // 应用筛选和排序
+      let filtered = [...this.pokemons]
+      
+      // 类型筛选
+      if (this.selectedType) {
+        filtered = filtered.filter(pokemon => 
+          pokemon.types.includes(this.selectedType)
+        )
+      }
+      
+      // 排序
+      filtered.sort((a, b) => {
+        if (this.sortBy === 'id') {
+          return a.id - b.id
+        } else if (this.sortBy === 'name') {
+          return a.name.localeCompare(b.name)
+        } else if (this.sortBy === 'hp') {
+          return b.stats.hp - a.stats.hp
+        }
+        return a.id - b.id
+      })
+      
+      this.filteredPokemons = filtered
+    },
+    onFilter(type) {
+      this.selectedType = type
+      this.applyFiltersAndSort()
+    },
+    onSort(sortBy) {
+      this.sortBy = sortBy
+      this.applyFiltersAndSort()
+    },
+    changePage(page) {
+      this.currentPage = page
+    },
+    navigateToDetail(id) {
+      uni.navigateTo({
+        url: `/pages/detail/detail?id=${id}`
+      })
+    }
   }
-};
+}
 </script>
 
-<style scoped>
-.favorites-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
-  padding: 20px 15px 80px 15px;
-}
-
-.favorites-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.header-icon {
-  width: 28px;
-  height: 28px;
-  margin-right: 10px;
-}
-
-.header-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-}
-
-.pokemon-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
-  padding-bottom: 20px;
-}
-
-.empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.empty-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 20px;
-  opacity: 0.7;
-}
-
-.empty-text {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.empty-hint {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 0 20px;
-}
-
-/* 底部导航栏样式（与首页相同） */
-.tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.95);
-  display: flex;
-  border-top: 1px solid #eee;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-}
-
-.tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #888;
-}
-
-.tab-item.active {
-  color: #e53935;
-}
-
-.tab-icon {
-  width: 28px;
-  height: 28px;
-  margin-bottom: 5px;
-  filter: grayscale(1);
-  opacity: 0.7;
-  transition: all 0.3s;
-}
-
-.tab-icon.active {
-  filter: grayscale(0);
-  opacity: 1;
-  transform: scale(1.1);
+<style lang="scss">
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
 }
 </style>
+  

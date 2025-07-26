@@ -1,3 +1,4 @@
+import '@/static/styles/global.css';
 import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
 import { createPinia } from 'pinia';
 import { createSSRApp } from "vue";
