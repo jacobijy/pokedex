@@ -1,4 +1,4 @@
-import { fetchPokemonList, type IPokemonModal } from '@/services/pokemon';
+import { fetchPokemonList } from '@/services/pokemon';
 import { padId } from '@/utils/helpers';
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';

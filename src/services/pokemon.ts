@@ -1,14 +1,4 @@
 // 模拟数据服务，实际项目中可替换为API调用
-export interface IPokemonModal {
-    id: number;
-    name: string;
-    types: string[];
-    abilities: string[];
-    image: string;
-    stats: { name: string; value: number }[];
-    description: string;
-}
-
 export const fetchPokemonList: () => Promise<IPokemonModal[]> = () => {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -27,6 +17,8 @@ export const fetchPokemonList: () => Promise<IPokemonModal[]> = () => {
             { name: "特防", value: 65 },
             { name: "速度", value: 45 }
           ],
+          moves: [],
+          evolutionChain: [],
           description: "妙蛙种子出生时背上就背着种子。种子会随着它的成长而逐渐变大并开花。"
         },
         // 其他宝可梦数据...

@@ -1,3 +1,5 @@
+import { Types } from '@/model/TypesDefine';
+
 // 格式化ID
 export const padId = (id: number) => {
   return id.toString().padStart(3, '0');
@@ -14,23 +16,23 @@ export const statColor = (value: number) => {
 };
 
 // 属性类型颜色映射
-export const typeColors = {
-  normal: '#A8A878',
-  fire: '#F08030',
-  water: '#6890F0',
-  electric: '#F8D030',
-  grass: '#78C850',
-  ice: '#98D8D8',
-  fighting: '#C03028',
-  poison: '#A040A0',
-  ground: '#E0C068',
-  flying: '#A890F0',
-  psychic: '#F85888',
-  bug: '#A8B820',
-  rock: '#B8A038',
-  ghost: '#705898',
-  dragon: '#7038F8',
-  dark: '#705848',
-  steel: '#B8B8D0',
-  fairy: '#EE99AC'
+export const typeColors: { [type: number]: string } = {
+  [Types.Normal]: '#A8A878',
+  [Types.Fire]: '#F08030',
+  [Types.Water]: '#6890F0',
+  [Types.Electric]: '#F8D030',
+  [Types.Grass]: '#78C850',
+  [Types.Ice]: '#98D8D8',
+  [Types.Fighting]: '#C03028',
+  [Types.Poison]: '#A040A0',
+  [Types.Ground]: '#E0C068',
+  [Types.Flying]: '#A890F0',
+  [Types.Psychic]: '#F85888',
+  [Types.Bug]: '#A8B820',
+  [Types.Rock]: '#B8A038',
+  [Types.Ghost]: '#705898',
+  [Types.Dragon]: '#7038F8',
+  [Types.Dark]: '#705848',
+  [Types.Steel]: '#B8B8D0',
+  [Types.Fairy]: '#EE99AC'
 };

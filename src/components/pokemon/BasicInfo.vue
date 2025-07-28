@@ -57,7 +57,7 @@
   </view>
 </template>
 
-<script>
+<script lang="ts" setup>
 export default {
   props: {
     pokemon: {
@@ -123,7 +123,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .type-badge {
   @apply px-2 py-1 rounded-full text-xs font-bold text-white;
 }

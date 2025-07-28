@@ -162,7 +162,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .type-badge {
   @apply px-2 py-0.5 rounded-full text-xs font-bold text-white inline-block;
 }
