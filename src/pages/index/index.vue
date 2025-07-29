@@ -45,7 +45,7 @@ const filteredPokemons = computed(() => {
 });
 
 // 显示详情
-const showDetail = (pokemon: IPokemonModal) => {
+const showDetail = (pokemon: IPokemonBaseModel) => {
     // selectedPokemon.value = pokemon;
 };
 

@@ -446,6 +446,10 @@ input {
     width: 33.3%;
 }
 
+.w-2\/3 {
+    width: 66.7%;
+}
+
 .transform {
     transform: translate(-50%, -50%);
 }
