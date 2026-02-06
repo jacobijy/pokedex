@@ -9,18 +9,20 @@
         </view>
       </picker>
     </view>
-    
+
     <view class="overflow-x-auto">
       <view class="moves-table min-w-full divide-y divide-gray-200">
-        <view class="moves-header grid grid-cols-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <view
+          class="moves-header grid grid-cols-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           <view class="px-3">招式名称</view>
           <view class="px-3">类型</view>
           <view class="px-3">分类</view>
           <view class="px-3">威力</view>
           <view class="px-3">命中率</view>
         </view>
-        
-        <view v-for="(move, index) in filteredMoves" :key="index" class="moves-row grid grid-cols-5 py-3 text-sm hover:bg-gray-50">
+
+        <view v-for="(move, index) in filteredMoves" :key="index"
+          class="moves-row grid grid-cols-5 py-3 text-sm hover:bg-gray-50">
           <view class="px-3 font-medium text-gray-900">{{ move.name }}</view>
           <view class="px-3"><text :class="getTypeBadgeClass(move.type)">{{ getTypeName(move.type) }}</text></view>
           <view class="px-3">{{ move.category || '-' }}</view>
@@ -29,17 +31,23 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 分页控件 -->
     <view class="mt-4 flex justify-center">
       <nav class="flex items-center space-x-1">
-        <button class="px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50" @click="prevPage" :disabled="currentPage <= 1">
+        <button
+          class="px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50"
+          @click="prevPage" :disabled="currentPage <= 1">
           上一页
         </button>
-        <button v-for="page in totalPages" :key="page" :class="{'px-2 py-1 rounded border border-gray-300 bg-red-500 text-xs font-medium text-white': page === currentPage, 'px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50': page !== currentPage}" @click="goToPage(page)">
+        <button v-for="page in totalPages" :key="page"
+          :class="{ 'px-2 py-1 rounded border border-gray-300 bg-red-500 text-xs font-medium text-white': page === currentPage, 'px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50': page !== currentPage }"
+          @click="goToPage(page)">
           {{ page }}
         </button>
-        <button class="px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50" @click="nextPage" :disabled="currentPage >= totalPages">
+        <button
+          class="px-2 py-1 rounded border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50"
+          @click="nextPage" :disabled="currentPage >= totalPages">
           下一页
         </button>
       </nav>
@@ -66,12 +74,12 @@ export default {
     filteredMoves() {
       // 根据筛选条件过滤招式
       let filtered = this.moves;
-      
+
       if (this.moveTypeFilter >= 0) {
         const moveTypes = ['level-up', 'machine', 'egg', 'tutor'];
         filtered = this.moves.filter(move => move.learnMethod === moveTypes[this.moveTypeFilter]);
       }
-      
+
       // 分页
       const start = (this.currentPage - 1) * this.movesPerPage;
       const end = start + this.movesPerPage;
@@ -79,12 +87,12 @@ export default {
     },
     totalPages() {
       let filteredCount = this.moves.length;
-      
+
       if (this.moveTypeFilter >= 0) {
         const moveTypes = ['level-up', 'machine', 'egg', 'tutor'];
         filteredCount = this.moves.filter(move => move.learnMethod === moveTypes[this.moveTypeFilter]).length;
       }
-      
+
       return Math.ceil(filteredCount / this.movesPerPage);
     },
     moveTypeFilterText() {
@@ -167,7 +175,8 @@ export default {
   @apply px-2 py-0.5 rounded-full text-xs font-bold text-white inline-block;
 }
 
-.moves-header, .moves-row {
+.moves-header,
+.moves-row {
   @apply grid grid-cols-5 py-2 text-left text-sm;
 }
 

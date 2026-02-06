@@ -40,16 +40,25 @@
       <view class="flex items-center">
         <text class="text-gray-500 w-24">类型:</text>
         <view class="flex gap-2">
-          <text v-for="type in pokemon.types" :key="type" :class="getTypeBadgeClass(type)">{{ getTypeName(type) }}</text>
+          <text 
+            v-for="type in pokemon.types" 
+            :key="type" 
+            :class="getTypeBadgeClass(type)"
+          >
+            {{ getTypeName(type) }}
+          </text>
         </view>
       </view>
       
       <view class="flex items-center">
         <text class="text-gray-500 w-24">属性相克:</text>
         <view class="flex flex-wrap gap-1">
-          <text v-for="(value, type) in pokemon.typeRelations" :key="type" 
-                :class="['px-1.5 py-0.5 rounded text-xs font-medium', value > 1 ? 'bg-red-500 text-white' : value < 1 ? 'bg-green-500 text-white' : 'bg-gray-500 text-white']">
-            {{ getTypeName(type) }}{{ value > 1 ? '2x' : value < 1 ? '0.5x' : '1x' }}
+          <text 
+            v-for="(value, type) in pokemon.typeRelations" 
+            :key="type" 
+            :class="['px-1.5 py-0.5 rounded text-xs font-medium', getRelationTypeClass(value, type)]"
+          >
+            {{ getTypeName(type) }}{{ getRelationValueText(value) }}
           </text>
         </view>
       </view>
@@ -57,70 +66,95 @@
   </view>
 </template>
 
-<script lang="ts" setup>
-export default {
-  props: {
-    pokemon: {
-      type: Object,
-      required: true
-    }
-  },
-  computed: {
-    typeNames() {
-      return {
-        normal: '一般',
-        fire: '火',
-        water: '水',
-        electric: '电',
-        grass: '草',
-        ice: '冰',
-        fighting: '格斗',
-        poison: '毒',
-        ground: '地面',
-        flying: '飞行',
-        psychic: '超能力',
-        bug: '虫',
-        rock: '岩石',
-        ghost: '幽灵',
-        dragon: '龙',
-        dark: '恶',
-        steel: '钢',
-        fairy: '妖精'
-      }
-    }
-  },
-  methods: {
-    getTypeName(type) {
-      return this.typeNames[type] || type
-    },
-    getTypeBadgeClass(type) {
-      return `type-badge ${this.getTypeColorClass(type)}`
-    },
-    getTypeColorClass(type) {
-      const typeColors = {
-        normal: 'bg-normal',
-        fire: 'bg-fire',
-        water: 'bg-water',
-        electric: 'bg-electric',
-        grass: 'bg-grass',
-        ice: 'bg-ice',
-        fighting: 'bg-fighting',
-        poison: 'bg-poison',
-        ground: 'bg-ground',
-        flying: 'bg-flying',
-        psychic: 'bg-psychic',
-        bug: 'bg-bug',
-        rock: 'bg-rock',
-        ghost: 'bg-ghost',
-        dragon: 'bg-dragon',
-        dark: 'bg-dark',
-        steel: 'bg-steel',
-        fairy: 'bg-fairy'
-      }
-      return typeColors[type] || 'bg-gray-500'
-    }
-  }
+<script setup lang="ts">
+interface Pokemon {
+  id: number | string;
+  image?: string;
+  category?: string;
+  height?: number;
+  weight?: number;
+  ability?: string;
+  types: string[];
+  typeRelations?: Record<string, number>;
 }
+
+defineProps<{
+  pokemon: Pokemon;
+}>();
+
+const typeNames = {
+  normal: '一般',
+  fire: '火',
+  water: '水',
+  electric: '电',
+  grass: '草',
+  ice: '冰',
+  fighting: '格斗',
+  poison: '毒',
+  ground: '地面',
+  flying: '飞行',
+  psychic: '超能力',
+  bug: '虫',
+  rock: '岩石',
+  ghost: '幽灵',
+  dragon: '龙',
+  dark: '恶',
+  steel: '钢',
+  fairy: '妖精'
+};
+
+const typeColors = {
+  normal: 'bg-normal',
+  fire: 'bg-fire',
+  water: 'bg-water',
+  electric: 'bg-electric',
+  grass: 'bg-grass',
+  ice: 'bg-ice',
+  fighting: 'bg-fighting',
+  poison: 'bg-poison',
+  ground: 'bg-ground',
+  flying: 'bg-flying',
+  psychic: 'bg-psychic',
+  bug: 'bg-bug',
+  rock: 'bg-rock',
+  ghost: 'bg-ghost',
+  dragon: 'bg-dragon',
+  dark: 'bg-dark',
+  steel: 'bg-steel',
+  fairy: 'bg-fairy'
+};
+
+const getTypeName = (type: string): string => {
+  return typeNames[type as keyof typeof typeNames] || type;
+};
+
+const getTypeColorClass = (type: string): string => {
+  return typeColors[type as keyof typeof typeColors] || 'bg-gray-500';
+};
+
+const getTypeBadgeClass = (type: string): string => {
+  return `type-badge ${getTypeColorClass(type)}`;
+};
+
+const getRelationTypeClass = (value: number, type: string): string => {
+  if (value > 1) {
+    return 'bg-red-500 text-white';
+  } else if (value < 1) {
+    return 'bg-green-500 text-white';
+  } else {
+    return 'bg-gray-500 text-white';
+  }
+};
+
+const getRelationValueText = (value: number): string => {
+  if (value > 1) {
+    return '2x';
+  } else if (value < 1) {
+    return '0.5x';
+  } else {
+    return '1x';
+  }
+};
 </script>
 
 <style scoped>

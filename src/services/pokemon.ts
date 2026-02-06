@@ -6,8 +6,8 @@ export const fetchPokemonList: () => Promise<IPokemonCardModel[]> = () => {
         {
           id: 1,
           name: "妙蛙种子",
-          types: ["草", "毒"],
-          abilities: ["茂盛", "叶绿素"],
+          types: ["grass", "poison"],
+          abilities: ["overgrow", "叶绿素"],
           hiddenAbility: '',
           image: "/static/pokemon/1.png",
           stats: [

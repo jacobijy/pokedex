@@ -23,9 +23,11 @@
 
                 <!-- 类型区域 -->
                 <view class="types">
-                    <view v-for="(type, index) in props.pokemon.types" :key="index" class="type"
-                        :style="{ 
-                            backgroundColor: `var(--${type})`,
+                    <view v-for="(type, index) in props.pokemon.types" 
+                    :key="index" 
+                    class="type"
+                    :class="`bg-${type}`"
+                        :style="{
                             color: getTextColorForBackground(`var(--${type})`)
                         }">
                         {{ getTypeName(type) }}
