@@ -1,0 +1,25 @@
+src/pages/index/index.vue
+  43b815b40dc85fd2 11-13,17-19,31,34-36,88-103,150-154
+src/store/pokemon.ts
+  43b815b40dc85fd2 37-45,47-53,55,58,60,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.39",
+  "base_commit_sha": "5c53e03c774ed826938fa891b914f49650004ab6",
+  "prompts": {
+    "43b815b40dc85fd2": {
+      "agent_id": {
+        "tool": "turing-coder",
+        "id": "uCc-U8pMza-s",
+        "model": "deepseek-v3"
+      },
+      "human_author": "yuyueling <1062393452@qq.com>",
+      "messages": [],
+      "total_additions": 106,
+      "total_deletions": 46,
+      "accepted_lines": 59,
+      "overriden_lines": 0
+    }
+  }
+}
