@@ -10,10 +10,11 @@ export const usePokemonStore = defineStore('pokemon', () => {
     // 获取宝可梦数据
     const fetchPokemon = async () => {
         const data = await fetchPokemonList();
-        pokemonList.value = data.map(p => ({
+        allPokemons.value = data.map(p => ({
             ...p,
             formattedId: padId(p.id)
         }));
+        loadMore();
     };
 
     // 切换收藏状态
@@ -33,10 +34,32 @@ export const usePokemonStore = defineStore('pokemon', () => {
         return favorites.value.includes(id);
     };
 
+    const currentPage = ref(1);
+    const pageSize = ref(20);
+    const hasMore = ref(true);
+    const allPokemons = ref<IPokemonBaseModel[]>([]);
+
+    const loadMore = () => {
+        const start = (currentPage.value - 1) * pageSize.value;
+        const end = start + pageSize.value;
+        const newPokemons = allPokemons.value.slice(start, end);
+
+        if (newPokemons.length > 0) {
+            pokemonList.value = [...pokemonList.value, ...newPokemons];
+            currentPage.value++;
+            hasMore.value = end < allPokemons.value.length;
+        }
+    };
+
+
+
     return {
         pokemonList,
+        allPokemons,
         favorites,
+        hasMore,
         fetchPokemon,
+        loadMore,
         toggleFavorite,
         isFavorite
     };

@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view>
         <view class="card" @click="onClick">
             <!-- 头像区域 -->
             <view class="avatar-container">
@@ -23,8 +23,8 @@
 
                 <!-- 类型区域 -->
                 <view class="types">
-                    <view v-for="(type, index) in props.pokemon.types" 
-                    :key="index" 
+                    <view v-for="(type, index) in props.pokemon.types"
+                    :key="index"
                     class="type"
                     :class="`bg-${type}`"
                         :style="{
@@ -88,19 +88,19 @@ const getTextColorForBackground = (bgColor: string): string => {
     // 提取颜色值并转换为RGB
     const regex = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/;
     const match = bgColor.match(regex);
-    
+
     if (match) {
         const r = parseInt(match[1]);
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
-        
+
         // 使用相对亮度公式计算亮度
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        
+
         // 如果背景较暗则返回白色，否则返回黑色
         return brightness > 128 ? '#000000' : '#FFFFFF';
     }
-    
+
     // 默认返回白色
     return '#FFFFFF';
 };

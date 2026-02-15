@@ -7,9 +7,16 @@
         <FilterBar v-show="isShow" class="fixed-filter-bar" :types="types" @filterToggle="filterToggle" @sort="onSort" />
 
         <!-- 宝可梦列表 -->
-        <view class="grid grid-cols-1 sm:grid-cols-1 md:grid_cols_1 lg:grid-cols-5 gap-4 px-4 py-6">
+        <view
+            class="flex flex-col gap-2 px-4 py-4"
+            @scroll="onScroll"
+            :style="{ height: 'calc(100vh - 180px)', overflow: 'auto' }"
+        >
             <PokemonCard v-for="pokemon in filteredPokemons" :key="pokemon.id" :pokemon="pokemon"
                 @click="navigateToDetail(pokemon.id)" />
+            <view v-if="loadingMore" class="loading-more">
+                加载中...
+            </view>
         </view>
     </view>
 </template>
@@ -21,10 +28,12 @@ import PokemonCard from "@/components/pokemon/PokemonCard.vue";
 import { usePokemonStore } from "@/store/pokemon";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
+import { debounce } from 'lodash-es';
 
 const pokemonStore = usePokemonStore();
-const { pokemonList } = storeToRefs(pokemonStore);
-const { fetchPokemon } = pokemonStore;
+const { pokemonList, hasMore } = storeToRefs(pokemonStore);
+const { fetchPokemon, loadMore } = pokemonStore;
+const loadingMore = ref(false);
 const searchQuery = ref("");
 const loading = ref(true);
 
@@ -76,6 +85,22 @@ const filterToggle = (value: boolean) => {
 };
 
 // 更新计算属性 filteredPokemons 以应用筛选和排序
+const onScroll = debounce((e: Event) => {
+    const target = e.target as HTMLElement;
+    const { scrollHeight, scrollTop, clientHeight } = target;
+    const threshold = 100;
+
+    if (scrollHeight - (scrollTop + clientHeight) < threshold &&
+        hasMore.value &&
+        !loadingMore.value &&
+        !searchQuery.value) {
+        loadingMore.value = true;
+        loadMore().finally(() => {
+            loadingMore.value = false;
+        });
+    }
+}, 200);
+
 const filteredPokemons = computed(() => {
     let list = [...pokemonList.value];
 
@@ -121,5 +146,11 @@ const filteredPokemons = computed(() => {
     z-index: 999;
     background-color: white; /* 防止内容穿透 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 可选：增加阴影效果 */
+}
+
+.loading-more {
+    text-align: center;
+    padding: 20px;
+    color: #666;
 }
 </style>
