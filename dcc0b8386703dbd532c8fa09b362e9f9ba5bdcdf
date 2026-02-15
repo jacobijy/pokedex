@@ -1,0 +1,27 @@
+src/pages/index/index.vue
+  43b815b40dc85fd2 6-17,23-25,29-31,43,46-47,50-82,178-199
+src/components/pokemon/PokemonCard.vue
+  43b815b40dc85fd2 91,96,99,103
+src/store/pokemon.ts
+  43b815b40dc85fd2 8,10-12,17,21-43,65,67,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.39",
+  "base_commit_sha": "dcc0b8386703dbd532c8fa09b362e9f9ba5bdcdf",
+  "prompts": {
+    "43b815b40dc85fd2": {
+      "agent_id": {
+        "tool": "turing-coder",
+        "id": "uCc-U8pMza-s",
+        "model": "deepseek-v3"
+      },
+      "human_author": "wangxj13 <wangxj13@asiainfo.com>",
+      "messages": [],
+      "total_additions": 366,
+      "total_deletions": 263,
+      "accepted_lines": 146,
+      "overriden_lines": 0
+    }
+  }
+}
