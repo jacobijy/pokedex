@@ -1,39 +1,28 @@
 <template>
     <view class="w-full cursor-pointer" @click="onClick">
-        <view class="relative flex items-center bg-white rounded-2xl p-4 mb-2 shadow-[0_2px_12px_rgba(0,0,0,0.08)] overflow-hidden border border-black/4 active:scale-98 group">
+        <view class="relative flex items-center bg-white rounded-xl p-3 mb-1 shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-black/4 active:scale-98 group">
             <!-- 背景装饰 -->
-            <view class="absolute -top-1/2 -right-1/5 w-[200px] h-[200px] bg-[radial-gradient(circle,rgba(255,107,107,0.08)_0%,transparent_70%)] rounded-full pointer-events-none"></view>
+            <view class="absolute -top-1/2 -right-1/4 w-[180px] h-[180px] bg-[radial-gradient(circle,rgba(255,107,107,0.08)_0%,transparent_70%)] rounded-full pointer-events-none"></view>
             
             <!-- 头像区域 -->
-            <view class="relative mr-4 flex-shrink-0">
-                <image :src="'/static/default.png'" class="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2] p-1 z-10" mode="aspectFit" />
-                <!-- 收藏按钮 -->
-                <view class="absolute -top-1 -right-1 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)] cursor-pointer transition-all duration-300 z-20 hover:scale-110 active:scale-95" @click.stop="toggleFavorite">
-                    <!-- 未收藏 - 空心星 -->
-                    <svg v-if="!isFavorite" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <!-- 已收藏 - 实心星 -->
-                    <svg v-else viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                </view>
+            <view class="relative mr-3 flex-shrink-0">
+                <image :src="'/static/default.png'" class="relative w-16 h-16 rounded-full z-10" mode="aspectFit" />
             </view>
 
             <!-- 信息区域 -->
-            <view class="flex-1 flex flex-col gap-2.5 z-10">
-                <!-- 编号和名称 -->
-                <view class="flex flex-col gap-1">
+            <view class="flex-1 flex items-center gap-1.5 z-10">
+                <!-- 编号和名称 - 居中 -->
+                <view class="flex flex-col gap-0.5 items-center">
                     <text class="text-xs text-[#999] font-medium tracking-wide">No.{{ String(props.pokemon.id).padStart(3, '0') }}</text>
-                    <text class="text-lg font-bold text-[#333] leading-tight">{{ props.pokemon.name }}</text>
+                    <text class="text-base font-bold text-[#333] leading-tight text-center">{{ props.pokemon.name }}</text>
                 </view>
 
-                <!-- 类型区域 -->
-                <view class="flex gap-2 flex-wrap">
+                <!-- 类型区域 - 靠右对齐，单个居中，多个排成一列 -->
+                <view class="ml-auto flex flex-col items-end gap-1">
                     <view 
                         v-for="(type, index) in props.pokemon.types"
                         :key="index"
-                        class="px-3 py-1 rounded-xl text-xs font-semibold text-white shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+                        class="px-2.5 py-0.5 rounded-lg text-xs font-semibold text-white shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
                         :class="getTypeClass(type)"
                     >
                         {{ getTypeName(type) }}
@@ -45,23 +34,12 @@
 </template>
 
 <script lang="ts" setup>
-import { usePokemonStore } from '@/store/pokemon';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-
 interface Props {
     pokemon: IPokemonCardModel;
     key: number;
 }
 
 const props = defineProps<Props>();
-const pokemonStore = usePokemonStore();
-const { favorites } = storeToRefs(pokemonStore);
-
-// 检查是否收藏
-const isFavorite = computed(() => {
-    return favorites.value.includes(props.pokemon.id);
-});
 
 // 方法
 const typeNames: { [key: string]: string } = {
@@ -118,10 +96,6 @@ const onClick = () => {
     uni.navigateTo({
         url: `/pages/detail/detail?id=${props.pokemon.id}`
     });
-};
-
-const toggleFavorite = () => {
-    pokemonStore.toggleFavorite(props.pokemon.id);
 };
 </script>
 
