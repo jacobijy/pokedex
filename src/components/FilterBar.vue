@@ -6,28 +6,13 @@
         <text class="text-sm font-semibold text-[#666] tracking-wide">类型筛选</text>
         <view class="flex flex-wrap gap-2 items-center">
           <button
-            v-for="type in types"
+            v-for="type in allTypes"
             :key="type"
             :class="['px-3.5 py-1.5 rounded-[20px] text-[13px] font-semibold text-white cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-2 border-transparent shadow-[0_2px_6px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0', getTypeClass(type), { 'border-white shadow-[0_0_0_3px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] scale-105': selectedTypes.includes(type) }]"
             @click="toggleTypeFilter(type)"
           >
             {{ typeNames[type] || type }}
           </button>
-          <view class="relative">
-            <button class="px-3.5 py-1.5 rounded-[20px] text-[13px] font-semibold text-white cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-2 border-transparent shadow-[0_2px_6px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0 bg-gradient-to-br from-[#667eea] to-[#764ba2]" @click="showMore = !showMore">
-              {{ showMore ? '收起' : '更多' }}
-            </button>
-            <view v-if="showMore" class="absolute top-full mt-2 left-0 bg-white rounded-xl p-3 shadow-[0_8px_24px_rgba(0,0,0,0.15)] flex flex-wrap gap-2 min-w-[280px] z-[1000] animate-fadeIn">
-              <button
-                v-for="type in moreTypes"
-                :key="type"
-                :class="['px-3.5 py-1.5 rounded-[20px] text-[13px] font-semibold text-white cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-2 border-transparent shadow-[0_2px_6px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0', getTypeClass(type), { 'border-white shadow-[0_0_0_3px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] scale-105': selectedTypes.includes(type) }]"
-                @click="toggleTypeFilter(type)"
-              >
-                {{ typeNames[type] || type }}
-              </button>
-            </view>
-          </view>
         </view>
       </view>
 
@@ -73,12 +58,8 @@ const typeNames = {
   fairy: '妖精'
 }
 
-// 定义基础类型和扩展类型
-const types = ref(['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison'])
-const moreTypes = ref(['ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'])
-
-// 控制更多类型显示
-const showMore = ref(false)
+// 定义所有类型（合并基础类型和扩展类型）
+const allTypes = ref(['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'])
 
 // 获取类型样式类名
 const getTypeClass = (type) => {

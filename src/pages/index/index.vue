@@ -1,41 +1,45 @@
 <template>
     <view 
-        class="min-h-screen bg-gradient-to-b from-[#f8f9fa] to-[#e9ecef] transition-opacity duration-300" 
+        class="min-h-screen bg-gradient-to-b from-[#f8f9fa] to-[#e9ecef] transition-opacity duration-300 flex flex-col" 
         :class="{'opacity-0': transitioning, 'opacity-100': !transitioning}"
         :style="{ paddingTop: 'calc(var(--status-bar-height) + 60px)', paddingBottom: '100px' }"
     >
         <!-- 导航栏 -->
-        <NavBar />
+        <NavBar @search="onSearch" @filterToggle="filterToggle" @showFavorites="toggleFavoritesView" />
 
         <!-- 筛选和排序 -->
-        <FilterBar v-show="isShow" :types="types" @filterToggle="filterToggle" @sort="onSort" />
+        <FilterBar v-show="isShow" @filterToggle="filterToggle" @filterChange="onFilterChange" />
 
-        <!-- 收藏按钮区域 -->
-        <view class="px-5 py-3">
-            <view 
-                class="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-[0_2px_12px_rgba(0,0,0,0.08)] cursor-pointer active:scale-98 transition-transform"
-                @click="goToFavorites"
-            >
-                <view class="flex items-center gap-3">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#EF4444" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        <!-- 收藏视图提示 -->
+        <view v-if="showFavoritesOnly" class="fixed z-[998] bg-gradient-to-r from-yellow-400 to-orange-400 shadow-[0_2px_8px_rgba(0,0,0,0.1)] animate-slideDown" :style="{ top: 'calc(var(--status-bar-height) + 60px)' }">
+            <view class="px-5 py-3 flex items-center justify-between">
+                <view class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                     </svg>
-                    <text class="text-sm font-semibold text-[#333]">我的收藏</text>
+                    <text class="text-sm font-semibold text-white">已收藏的宝可梦 ({{ filteredPokemons.length }})</text>
                 </view>
-                <view class="flex items-center gap-1">
-                    <view v-if="favoritesCount > 0" class="bg-[#EF4444] text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                        {{ favoritesCount }}
-                    </view>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </view>
+                <button class="px-3 py-1.5 bg-white/20 rounded-full text-xs font-semibold text-white hover:bg-white/30 transition-all active:scale-95" @click="toggleFavoritesView">
+                    查看全部
+                </button>
             </view>
         </view>
 
         <!-- 宝可梦列表 -->
-        <view class="h-[calc(100vh-var(--status-bar-height)-60px-100px-70px)] overflow-y-auto p-5 custom-scrollbar" @scroll="onScroll">
-            <view class="grid grid-cols-[repeat(auto-fill,minmax(360px,1fr))] gap-4 max-w-[1400px] mx-auto">
+        <view class="flex-1 overflow-y-auto p-3 custom-scrollbar" @scroll="onScroll">
+            <!-- 空状态提示 -->
+            <view v-if="showFavoritesOnly && filteredPokemons.length === 0" class="flex flex-col items-center justify-center py-20 gap-4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-20 h-20 text-gray-300">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <text class="text-lg font-semibold text-gray-400">还没有收藏任何宝可梦</text>
+                <text class="text-sm text-gray-400">点击卡片右上角的星标即可收藏</text>
+                <button class="mt-4 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-semibold shadow-[0_4px_12px_rgba(255,165,0,0.3)] hover:shadow-[0_6px_16px_rgba(255,165,0,0.4)] transition-all active:scale-95" @click="toggleFavoritesView">
+                    浏览全部宝可梦
+                </button>
+            </view>
+
+            <view v-else class="grid grid-cols-[repeat(auto-fill,minmax(360px,1fr))] gap-2 max-w-[1400px] mx-auto">
                 <PokemonCard 
                     v-for="pokemon in filteredPokemons" 
                     :key="pokemon.id" 
@@ -68,7 +72,7 @@ import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
 
 const pokemonStore = usePokemonStore();
-const { pokemonList, hasMore, favorites } = storeToRefs(pokemonStore);
+const { pokemonList, hasMore } = storeToRefs(pokemonStore);
 const { fetchPokemon, loadMore } = pokemonStore;
 const loadingMore = ref(false);
 const searchQuery = ref("");
@@ -90,9 +94,6 @@ onMounted(async () => {
     }
 });
 
-// 定义类型数组
-const types = ref(['一般', '火', '水', '电', '草', '冰', '格斗', '毒', '地面', '飞行', '超能力', '虫', '岩石', '幽灵', '龙', '恶', '钢', '妖精']);
-
 // 显示详情
 const showDetail = (pokemon: IPokemonBaseModel) => {
     // selectedPokemon.value = pokemon;
@@ -105,19 +106,30 @@ const navigateToDetail = (id: number) => {
 };
 
 // 新增响应式变量用于存储当前筛选和排序状态
-const currentFilter = ref<string | null>(null);
-const currentSort = ref<string>('default');
+const currentFilterTypes = ref<string[]>([]); // 选中的类型数组
+const currentSort = ref<string>('id'); // 排序方式
 const isShow = ref(false);
 const currentTab = ref(0); // 当前选中的 tab 索引
+const showFavoritesOnly = ref(false); // 是否只显示收藏
 
-// 实现 onFilter 方法
-const onFilter = (filterType: string) => {
-    currentFilter.value = filterType;
+// 处理筛选变化
+const onFilterChange = (filterData: { types: string[], sort: string }) => {
+    currentFilterTypes.value = filterData.types;
+    currentSort.value = filterData.sort;
 };
 
-// 实现 onSort 方法
-const onSort = (sortBy: string) => {
-    currentSort.value = sortBy;
+// 切换收藏视图
+const toggleFavoritesView = () => {
+    showFavoritesOnly.value = !showFavoritesOnly.value;
+    // 如果切换到收藏视图，关闭筛选栏
+    if (showFavoritesOnly.value) {
+        isShow.value = false;
+    }
+};
+
+// 搜索处理
+const onSearch = (query: string) => {
+    searchQuery.value = query;
 };
 
 const filterToggle = (value: boolean) => {
@@ -141,18 +153,6 @@ const onTabChange = (index: number) => {
     }, 150);
 };
 
-// 收藏数量
-const favoritesCount = computed(() => {
-    return favorites.value.length;
-});
-
-// 跳转到收藏页面
-const goToFavorites = () => {
-    uni.navigateTo({
-        url: '/pages/favorite/favorite'
-    });
-};
-
 // 更新计算属性 filteredPokemons 以应用筛选和排序
 const onScroll = debounce((e: Event) => {
     const target = e.target as HTMLElement;
@@ -173,9 +173,17 @@ const onScroll = debounce((e: Event) => {
 const filteredPokemons = computed(() => {
     let list = [...pokemonList.value];
 
-    // 应用筛选
-    if (currentFilter.value) {
-        list = list.filter((p) => p.types.includes(currentFilter.value!));
+    // 应用收藏筛选
+    if (showFavoritesOnly.value) {
+        const favoriteIds = pokemonStore.favorites;
+        list = list.filter((p) => favoriteIds.includes(p.id));
+    }
+
+    // 应用类型筛选
+    if (currentFilterTypes.value.length > 0) {
+        list = list.filter((p) => 
+            currentFilterTypes.value.some(type => p.types.includes(type))
+        );
     }
 
     // 应用排序
@@ -183,6 +191,24 @@ const filteredPokemons = computed(() => {
         list.sort((a, b) => a.id - b.id);
     } else if (currentSort.value === 'name') {
         list.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (currentSort.value === 'hp') {
+        list.sort((a, b) => {
+            const hpA = a.stats?.find(s => s.name === 'HP')?.value || 0;
+            const hpB = b.stats?.find(s => s.name === 'HP')?.value || 0;
+            return hpB - hpA;
+        });
+    } else if (currentSort.value === 'attack') {
+        list.sort((a, b) => {
+            const atkA = a.stats?.find(s => s.name === '攻击')?.value || 0;
+            const atkB = b.stats?.find(s => s.name === '攻击')?.value || 0;
+            return atkB - atkA;
+        });
+    } else if (currentSort.value === 'defense') {
+        list.sort((a, b) => {
+            const defA = a.stats?.find(s => s.name === '防御')?.value || 0;
+            const defB = b.stats?.find(s => s.name === '防御')?.value || 0;
+            return defB - defA;
+        });
     }
 
     // 应用搜索筛选

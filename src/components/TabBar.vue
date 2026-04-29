@@ -139,7 +139,7 @@ const switchTab = (index: number) => {
     '/pages/mine/mine'
   ]
   
-  uni.switchTab({
+  uni.reLaunch({
     url: pages[index]
   })
 }
