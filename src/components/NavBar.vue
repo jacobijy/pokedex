@@ -42,6 +42,21 @@
 
       <!-- 右侧按钮组 -->
       <view class="flex items-center gap-2 flex-shrink-0">
+        <!-- 世代筛选按钮 -->
+        <button 
+          class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center transition-all duration-300 backdrop-blur hover:bg-white/30 hover:scale-105 active:scale-95 relative"
+          :class="{ '!bg-white/95 shadow-[0_2px_8px_rgba(0,0,0,0.15)]': generationVisible }"
+          @click="toggleGeneration"
+        >
+          <!-- 世代图标 - 时间线样式 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-all duration-300" :class="generationVisible ? 'text-[#EE5A6F]' : 'text-white'">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <!-- 世代激活指示器 -->
+          <view v-if="hasActiveGeneration" class="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full border-2 border-white animate-pulse"></view>
+        </button>
+
         <!-- 筛选按钮 -->
         <button 
           class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center transition-all duration-300 backdrop-blur hover:bg-white/30 hover:scale-105 active:scale-95 relative"
@@ -86,6 +101,7 @@ const { favorites } = storeToRefs(pokemonStore)
 // 定义响应式数据
 const searchText = ref('')
 const filterVisible = ref(false)
+const generationVisible = ref(false)
 const isSearchFocused = ref(false)
 
 // 计算收藏数量
@@ -96,6 +112,12 @@ const favoritesCount = computed(() => {
 // 计算是否有激活的筛选条件（可以根据实际情况调整）
 const hasActiveFilters = computed(() => {
   // TODO: 根据实际筛选状态返回
+  return false
+})
+
+// 计算是否有激活的世代筛选
+const hasActiveGeneration = computed(() => {
+  // TODO: 根据实际世代筛选状态返回
   return false
 })
 
@@ -124,6 +146,12 @@ const toggleFilter = () => {
   emit('filterToggle', filterVisible.value)
 }
 
+const toggleGeneration = () => {
+  generationVisible.value = !generationVisible.value
+  // 向父组件发送世代筛选切换事件
+  emit('generationToggle', generationVisible.value)
+}
+
 const goHome = () => {
   // 返回首页
   uni.switchTab({
@@ -137,7 +165,7 @@ const handleFavoritesClick = () => {
 }
 
 // 定义 emit 用于向父组件传递事件
-const emit = defineEmits(['search', 'filterToggle', 'showFavorites'])
+const emit = defineEmits(['search', 'filterToggle', 'showFavorites', 'generationToggle'])
 </script>
 
 <style lang="scss" scoped>
